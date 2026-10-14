@@ -1,0 +1,75 @@
+{
+  "_comment": "复制成 agents.config.json，放到插件目录或 bykRoot 下即可覆盖默认值；没写的键沿用默认。planRole 决定谁出计划（默认任务助手）；maxParallel 是 byk_batch 批内并发上限。routing.appliesTo 里 task/code/search 按峰谷切模型；research 固定 mimo-v2.6-pro（白名单越过全局禁用）；vision/file 走 mimo-v2.6-flash；audio 走 mimo-v2.5-asr 直连 + mimo-v2.6-flash 理解。forbiddenModels 默认禁用 deepseek-v4-pro / mimo-v2.6-pro / mimo-v2.6-pro-ultraspeed。",
+  "planRole": "task",
+  "maxParallel": 3,
+  "routing": {
+    "enabled": true,
+    "appliesTo": [
+      "task",
+      "code",
+      "search"
+    ],
+    "peak": {
+      "provider": "xiaomi",
+      "model": "mimo-v2.6-flash"
+    },
+    "offPeak": {
+      "provider": "deepseek-official",
+      "model": "deepseek-flash",
+      "reasoningEffort": "high"
+    }
+  },
+  "rolesFrom": "routing",
+  "roles": {
+    "task": {
+      "backend": "llm"
+    },
+    "audio": {
+      "backend": "asr",
+      "provider": "xiaomi",
+      "model": "mimo-v2.5-asr",
+      "asr": {
+        "baseURL": "https://api.xiaomimimo.com/v1",
+        "model": "mimo-v2.5-asr",
+        "apiKeyEnv": "XIAOMI_API_KEY"
+      },
+      "understand": {
+        "provider": "xiaomi",
+        "model": "mimo-v2.6-flash"
+      }
+    },
+    "file": {
+      "backend": "local",
+      "local": {
+        "enabled": true,
+        "command": "python",
+        "args": [
+          "-m",
+          "my_extract",
+          "--path",
+          "{task}"
+        ],
+        "timeoutMs": 120000
+      }
+    },
+    "research": {
+      "backend": "llm",
+      "provider": "xiaomi",
+      "model": "mimo-v2.6-pro",
+      "allowForbiddenModels": [
+        "mimo-v2.6-pro"
+      ]
+    }
+  },
+  "forbiddenModels": [
+    "deepseek-v4-pro",
+    "mimo-v2.6-pro",
+    "mimo-v2.6-pro-ultraspeed"
+  ],
+  "local": {
+    "enabled": false,
+    "command": "",
+    "args": [],
+    "timeoutMs": 600000
+  }
+}

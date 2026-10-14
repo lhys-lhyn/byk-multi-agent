@@ -1,0 +1,76 @@
+{
+  "subagentTools": "inherit-all",
+  "_comment": "subagentTools 决定角色子智能体能看到哪些工具：\"inherit-all\"（默认）= 不设 toolFilter，继承调用方会话（父会话）的全部工具，包含其它已安装插件注册的全局工具——这是 v1.2.0 的推荐默认值，token 增量为零（是继承不是复制）。要收窄就写成对象，如 {\"deny\": [\"browser_*\", \"computer_*\"]}：交集语义，只会变少不会变多，且**推荐用 deny 而不是 allow**（漏写一项不会让工具消失）。写成 {}（既无 allow 也无 deny）会在插件加载时报错。注意：收窄要求当前进程内 provider 的 capabilities.toolFilter 为 true，不支持时会明确报错而不是静默忽略。复制成 agents.config.json，放到插件目录或 bykRoot 下即可覆盖默认值；没写的键沿用默认。planRole 决定谁出计划（默认任务助手）；maxParallel 是 byk_batch 批内并发上限。routing.appliesTo 里 task/code/search 按峰谷切模型；research 固定 mimo-v2.6-pro（白名单越过全局禁用）；vision/file 走 mimo-v2.6-flash；audio 走 mimo-v2.5-asr 直连 + mimo-v2.6-flash 理解。forbiddenModels 默认禁用 deepseek-v4-pro / mimo-v2.6-pro / mimo-v2.6-pro-ultraspeed。",
+  "planRole": "task",
+  "maxParallel": 3,
+  "routing": {
+    "enabled": true,
+    "appliesTo": [
+      "task",
+      "code",
+      "search"
+    ],
+    "peak": {
+      "provider": "xiaomi",
+      "model": "mimo-v2.6-flash"
+    },
+    "offPeak": {
+      "provider": "deepseek-official",
+      "model": "deepseek-flash",
+      "reasoningEffort": "high"
+    }
+  },
+  "rolesFrom": "routing",
+  "roles": {
+    "task": {
+      "backend": "llm"
+    },
+    "audio": {
+      "backend": "asr",
+      "provider": "xiaomi",
+      "model": "mimo-v2.5-asr",
+      "asr": {
+        "baseURL": "https://api.xiaomimimo.com/v1",
+        "model": "mimo-v2.5-asr",
+        "apiKeyEnv": "XIAOMI_API_KEY"
+      },
+      "understand": {
+        "provider": "xiaomi",
+        "model": "mimo-v2.6-flash"
+      }
+    },
+    "file": {
+      "backend": "local",
+      "local": {
+        "enabled": true,
+        "command": "python",
+        "args": [
+          "-m",
+          "my_extract",
+          "--path",
+          "{task}"
+        ],
+        "timeoutMs": 120000
+      }
+    },
+    "research": {
+      "backend": "llm",
+      "provider": "xiaomi",
+      "model": "mimo-v2.6-pro",
+      "allowForbiddenModels": [
+        "mimo-v2.6-pro"
+      ]
+    }
+  },
+  "forbiddenModels": [
+    "deepseek-v4-pro",
+    "mimo-v2.6-pro",
+    "mimo-v2.6-pro-ultraspeed"
+  ],
+  "local": {
+    "enabled": false,
+    "command": "",
+    "args": [],
+    "timeoutMs": 600000
+  }
+}

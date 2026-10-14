@@ -1,0 +1,24 @@
+{
+  "name": "dsh-plugin-byk-agents",
+  "version": "1.3.1",
+  "files": {
+    ".gitignore": "2c88267399ac2228bc98472b1c524742418873d58a772eab7d02933abd261e1d",
+    "agents.config.example.json": "e723928987aa0634ba64e655021b5214c302383ef92b3ab79c39a74c7e78d30f",
+    "cordis.patch.yml": "67aa6921cfc85d7d246604b08c27a1cc5ee7b9276e6946e5fd57a3e78616f956",
+    "lib/asr.js": "66aea48f806975e5c59d1ff726ec331d0d73019ed12d63c7997824b17cc094c2",
+    "lib/client.js": "210edc4e41ab77cadc08cfc3d8e5c9d1702131e531372d0088cf642d56e63d4e",
+    "lib/index.js": "0e2e191afd64139e90848f7c75e7aee1e45a3ca8fddb2cdb353ece659b22b036",
+    "lib/plan.js": "d83fdbddbad0f4e06410013605655b27893f87c3ec1b8ea380cdece15452227a",
+    "lib/routing.js": "1131df96ca02a9dd65cdf354f8c33ed1b459f329947012c8ee0968091b18d674",
+    "lib/timing.js": "7278312ac6b200adfc36216753a14a0e60cfce8adb171d0c2ae1e658c473bd70",
+    "NOTES.md": "e533061a322a6608286c135dc4bef96986da345b51ae1cfecd7d586fd53c6db6",
+    "package.json": "4cb66a9497974f0e3d30d8cd2254d438932d56dd9b92120ace7a40db9621cd55",
+    "readme.md": "e6fc9e23aff30414e52557c396246d54b224c0ca77b231ffee409a6a14e52b3c",
+    "scripts/asr-mimo.mjs": "6828bf159112a1d47db64093b49739cb3c72f4f94bce68c66cf34676ec4e9395",
+    "test/client-approval.test.js": "5b14eae2da981730c914e6d34f80e8593efdb3b26e6fb975d66e43d7d6bee481",
+    "test/plan.test.js": "22035680988f4f273ea7c84f8d9b02b8d9a403f7eac924f0a54523636604ca3d",
+    "test/run-smoke.mjs": "759c9d6ff44360894455c820b845b1d8992ee6acc64a93e59efc7720dc89bbc7",
+    "test/smoke.test.js": "e04272584838715680bf9115d678fdd19a5f1ebc3af2f9507e88cd00513f8ffe",
+    "test/timing.test.js": "1a9086720795f81d5a39efcc28dfdb3e9ff03290f334af56102b547d7283a94b"
+  }
+}

@@ -1,0 +1,21 @@
+# 声明式 bundle 补丁：把 byk-agents 插件插进 profile 的 composition。
+# 由 pluginManager/installBundle（或 dsh plugin add）读取。
+- insert:
+    - id: byk-agents
+      name: 'dsh-plugin-byk-agents'
+      config:
+        bykRoot: C:/Projects/byk
+        python: C:/Projects/byk/.venv/Scripts/python.exe
+        timeoutMs: 1800000
+        routingConfigPath: ""
+        allowSubagentDelegation: false
+
+# xiaomi 路由需要 profile 层声明 provider + 凭据名（pi-ai 自带 xiaomi 目录，models 无需列出）。
+# 之前这段写在 profile 的 cordis.patch.yml 里被设置持久化覆盖掉了，所以改由本 bundle 自带。
+- id: llm-pi-ai
+  name: '@deepseek-ai/dsh-llm-pi-ai'
+  config:
+    providers:
+      xiaomi:
+        displayName: 小米 MiMo
+        apiKeyEnv: XIAOMI_API_KEY

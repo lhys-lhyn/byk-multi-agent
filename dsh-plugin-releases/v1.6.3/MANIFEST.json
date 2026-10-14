@@ -1,0 +1,119 @@
+{
+ "name": "dsh-plugin-byk-agents",
+ "version": "1.6.3",
+ "archivedAt": "2026-10-06T01:53:35.543Z",
+ "source": "C:\\Projects\\byk\\dsh-plugin",
+ "fileCount": 22,
+ "files": [
+  {
+   "path": ".gitignore",
+   "bytes": 52,
+   "sha256": "2c88267399ac2228bc98472b1c524742418873d58a772eab7d02933abd261e1d"
+  },
+  {
+   "path": "agents.config.example.json",
+   "bytes": 2717,
+   "sha256": "e723928987aa0634ba64e655021b5214c302383ef92b3ab79c39a74c7e78d30f"
+  },
+  {
+   "path": "cordis.patch.yml",
+   "bytes": 814,
+   "sha256": "67aa6921cfc85d7d246604b08c27a1cc5ee7b9276e6946e5fd57a3e78616f956"
+  },
+  {
+   "path": "docs/jev-planning-spec.md",
+   "bytes": 19332,
+   "sha256": "13f030c2f8a9a3d6b0cc9d3a06be5cf2272e1f3214aa129ca2931fd6b913217c"
+  },
+  {
+   "path": "lib/asr.js",
+   "bytes": 5763,
+   "sha256": "66aea48f806975e5c59d1ff726ec331d0d73019ed12d63c7997824b17cc094c2"
+  },
+  {
+   "path": "lib/client.js",
+   "bytes": 36584,
+   "sha256": "d1b2146689f920057844a302cae71a4c9bbf596269f266bd68e71b45d013debf"
+  },
+  {
+   "path": "lib/index.js",
+   "bytes": 65772,
+   "sha256": "a82fdb7606311f00486e223409a529d4d1ca2247977cec236669239c05801920"
+  },
+  {
+   "path": "lib/jev.js",
+   "bytes": 18117,
+   "sha256": "9a01a4405d2b8bdbd4c3e0fc77a32aab9e7ed390c05ed9ac5e9caca36dabab13"
+  },
+  {
+   "path": "lib/mood.js",
+   "bytes": 8648,
+   "sha256": "d06cb515d4e9a8f761305ea4ad30d39a34ae8a8f0e0c0bb05b176784b1b9da48"
+  },
+  {
+   "path": "lib/plan.js",
+   "bytes": 11152,
+   "sha256": "d8f459c18e18480e91b14d93ec62c2f9409ad6aea76c2f5466b8efcde5657b7e"
+  },
+  {
+   "path": "lib/routing.js",
+   "bytes": 10405,
+   "sha256": "1131df96ca02a9dd65cdf354f8c33ed1b459f329947012c8ee0968091b18d674"
+  },
+  {
+   "path": "lib/timing.js",
+   "bytes": 4341,
+   "sha256": "7278312ac6b200adfc36216753a14a0e60cfce8adb171d0c2ae1e658c473bd70"
+  },
+  {
+   "path": "package.json",
+   "bytes": 1097,
+   "sha256": "a53e73cfc4e1adc5fb1c366149231338dc83c8e74f5be57442d5d5da12b8f873"
+  },
+  {
+   "path": "readme.md",
+   "bytes": 26114,
+   "sha256": "2580bc86fa4a4b008026f5e6f903cdaf143cd81c347c2bed5d64e9494654e259"
+  },
+  {
+   "path": "scripts/asr-mimo.mjs",
+   "bytes": 1707,
+   "sha256": "6828bf159112a1d47db64093b49739cb3c72f4f94bce68c66cf34676ec4e9395"
+  },
+  {
+   "path": "test/client-approval.test.js",
+   "bytes": 11545,
+   "sha256": "ab1ff9617aa25b96ee0b2be6c2e4231b179a3cf138db38870b3a6979ffc90e10"
+  },
+  {
+   "path": "test/jev.test.js",
+   "bytes": 17976,
+   "sha256": "79d6a1e323a918e330bdf5442a9b4ba9325389f32f7979d61496f8659da41081"
+  },
+  {
+   "path": "test/mood.test.js",
+   "bytes": 14268,
+   "sha256": "4591c9152d37b252f0e7463b7cd722b535fd9a0b8c0522a707bd2570111ff8a6"
+  },
+  {
+   "path": "test/plan.test.js",
+   "bytes": 4984,
+   "sha256": "0ae5b85382ab65899a352df13c0136ffa7c9e6b9f96b88d907f7731d8889717b"
+  },
+  {
+   "path": "test/run-smoke.mjs",
+   "bytes": 2975,
+   "sha256": "6bc76782735bf88ce2cd8fa3b774bdc2dc94b22feb09153fd117b3cca2c1f5bc"
+  },
+  {
+   "path": "test/smoke.test.js",
+   "bytes": 25916,
+   "sha256": "b38f673762b07ef4331d2157905eeefe3393bae983a609585b4220dcff62bc74"
+  },
+  {
+   "path": "test/timing.test.js",
+   "bytes": 6655,
+   "sha256": "1a9086720795f81d5a39efcc28dfdb3e9ff03290f334af56102b547d7283a94b"
+  }
+ ]
+}

@@ -1,0 +1,75 @@
+{
+  "name": "dsh-plugin-byk-agents",
+  "version": "1.4.1",
+  "createdAt": "2026-10-05T08:58:34.738Z",
+  "files": {
+    ".gitignore": {
+      "bytes": 52,
+      "sha256": "2c88267399ac2228bc98472b1c524742418873d58a772eab7d02933abd261e1d"
+    },
+    "agents.config.example.json": {
+      "bytes": 2717,
+      "sha256": "e723928987aa0634ba64e655021b5214c302383ef92b3ab79c39a74c7e78d30f"
+    },
+    "cordis.patch.yml": {
+      "bytes": 814,
+      "sha256": "67aa6921cfc85d7d246604b08c27a1cc5ee7b9276e6946e5fd57a3e78616f956"
+    },
+    "lib/asr.js": {
+      "bytes": 5763,
+      "sha256": "66aea48f806975e5c59d1ff726ec331d0d73019ed12d63c7997824b17cc094c2"
+    },
+    "lib/client.js": {
+      "bytes": 36455,
+      "sha256": "14fad46bf5db28b3b78491c35e9341e37b4007c383176ff79f42d964a205f965"
+    },
+    "lib/index.js": {
+      "bytes": 43778,
+      "sha256": "0e2e191afd64139e90848f7c75e7aee1e45a3ca8fddb2cdb353ece659b22b036"
+    },
+    "lib/plan.js": {
+      "bytes": 10120,
+      "sha256": "d83fdbddbad0f4e06410013605655b27893f87c3ec1b8ea380cdece15452227a"
+    },
+    "lib/routing.js": {
+      "bytes": 10405,
+      "sha256": "1131df96ca02a9dd65cdf354f8c33ed1b459f329947012c8ee0968091b18d674"
+    },
+    "lib/timing.js": {
+      "bytes": 4341,
+      "sha256": "7278312ac6b200adfc36216753a14a0e60cfce8adb171d0c2ae1e658c473bd70"
+    },
+    "package.json": {
+      "bytes": 985,
+      "sha256": "ffaddfdde97cc42315be1505d0331d93dc2ed048799e5ad1628cb2a4e1b63c52"
+    },
+    "readme.md": {
+      "bytes": 15591,
+      "sha256": "ab6996fc8c7f722e180e83429ef741230b1e5a585793fd76e7e73e94a08a0e42"
+    },
+    "scripts/asr-mimo.mjs": {
+      "bytes": 1707,
+      "sha256": "6828bf159112a1d47db64093b49739cb3c72f4f94bce68c66cf34676ec4e9395"
+    },
+    "test/client-approval.test.js": {
+      "bytes": 11545,
+      "sha256": "ab1ff9617aa25b96ee0b2be6c2e4231b179a3cf138db38870b3a6979ffc90e10"
+    },
+    "test/plan.test.js": {
+      "bytes": 4675,
+      "sha256": "22035680988f4f273ea7c84f8d9b02b8d9a403f7eac924f0a54523636604ca3d"
+    },
+    "test/run-smoke.mjs": {
+      "bytes": 2529,
+      "sha256": "759c9d6ff44360894455c820b845b1d8992ee6acc64a93e59efc7720dc89bbc7"
+    },
+    "test/smoke.test.js": {
+      "bytes": 9470,
+      "sha256": "e04272584838715680bf9115d678fdd19a5f1ebc3af2f9507e88cd00513f8ffe"
+    },
+    "test/timing.test.js": {
+      "bytes": 6655,
+      "sha256": "1a9086720795f81d5a39efcc28dfdb3e9ff03290f334af56102b547d7283a94b"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "dsh-plugin-byk-agents",
+  "version": "1.3.1",
+  "private": true,
+  "description": "把 BYK 的七个专业助手暴露成 DSH 工具，任何会话、任何工作区都能调用",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./asr": "./lib/asr.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "lib/routing.js",
+    "lib/timing.js",
+    "lib/asr.js",
+    "scripts/asr-mimo.mjs",
+    "cordis.patch.yml",
+    "agents.config.example.json",
+    "README.md",
+    "lib/plan.js",
+    "test/plan.test.js",
+    "test/client-approval.test.js"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "*",
+    "@deepseek-ai/dsh-tools": "*",
+    "@deepseek-ai/schemastery": "*"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": []
+    }
+  }
+}

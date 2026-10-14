@@ -1,0 +1,75 @@
+{
+  "name": "dsh-plugin-byk-agents",
+  "version": "1.4.0",
+  "archivedAt": "2026-10-05T07:40:11.575Z",
+  "files": {
+    ".gitignore": {
+      "size": 52,
+      "sha256": "2c88267399ac2228bc98472b1c524742418873d58a772eab7d02933abd261e1d"
+    },
+    "agents.config.example.json": {
+      "size": 2717,
+      "sha256": "e723928987aa0634ba64e655021b5214c302383ef92b3ab79c39a74c7e78d30f"
+    },
+    "cordis.patch.yml": {
+      "size": 814,
+      "sha256": "67aa6921cfc85d7d246604b08c27a1cc5ee7b9276e6946e5fd57a3e78616f956"
+    },
+    "lib/asr.js": {
+      "size": 5763,
+      "sha256": "66aea48f806975e5c59d1ff726ec331d0d73019ed12d63c7997824b17cc094c2"
+    },
+    "lib/client.js": {
+      "size": 35339,
+      "sha256": "210edc4e41ab77cadc08cfc3d8e5c9d1702131e531372d0088cf642d56e63d4e"
+    },
+    "lib/index.js": {
+      "size": 43778,
+      "sha256": "0e2e191afd64139e90848f7c75e7aee1e45a3ca8fddb2cdb353ece659b22b036"
+    },
+    "lib/plan.js": {
+      "size": 10120,
+      "sha256": "d83fdbddbad0f4e06410013605655b27893f87c3ec1b8ea380cdece15452227a"
+    },
+    "lib/routing.js": {
+      "size": 10405,
+      "sha256": "1131df96ca02a9dd65cdf354f8c33ed1b459f329947012c8ee0968091b18d674"
+    },
+    "lib/timing.js": {
+      "size": 4341,
+      "sha256": "7278312ac6b200adfc36216753a14a0e60cfce8adb171d0c2ae1e658c473bd70"
+    },
+    "package.json": {
+      "size": 985,
+      "sha256": "592a1140b10e9fc8a38833d6195f3788cdd5cad45e65d8bff3d52351c4fad6b3"
+    },
+    "readme.md": {
+      "size": 15591,
+      "sha256": "ab6996fc8c7f722e180e83429ef741230b1e5a585793fd76e7e73e94a08a0e42"
+    },
+    "scripts/asr-mimo.mjs": {
+      "size": 1707,
+      "sha256": "6828bf159112a1d47db64093b49739cb3c72f4f94bce68c66cf34676ec4e9395"
+    },
+    "test/client-approval.test.js": {
+      "size": 10459,
+      "sha256": "5b14eae2da981730c914e6d34f80e8593efdb3b26e6fb975d66e43d7d6bee481"
+    },
+    "test/plan.test.js": {
+      "size": 4675,
+      "sha256": "22035680988f4f273ea7c84f8d9b02b8d9a403f7eac924f0a54523636604ca3d"
+    },
+    "test/run-smoke.mjs": {
+      "size": 2529,
+      "sha256": "759c9d6ff44360894455c820b845b1d8992ee6acc64a93e59efc7720dc89bbc7"
+    },
+    "test/smoke.test.js": {
+      "size": 9470,
+      "sha256": "e04272584838715680bf9115d678fdd19a5f1ebc3af2f9507e88cd00513f8ffe"
+    },
+    "test/timing.test.js": {
+      "size": 6655,
+      "sha256": "1a9086720795f81d5a39efcc28dfdb3e9ff03290f334af56102b547d7283a94b"
+    }
+  }
+}

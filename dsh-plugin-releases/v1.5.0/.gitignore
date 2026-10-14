@@ -1,0 +1,6 @@
+node_modules/
+.byk-work/
+*.orig-*
+*.bak
+*.tmp
+*.log
