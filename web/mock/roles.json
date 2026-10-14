@@ -1,0 +1,58 @@
+[
+  {
+    "id": "task",
+    "name": "任务助手",
+    "model": "deepseek-v4-flash",
+    "description": "识别文本中的任务、拆成子任务、指派角色，产出结构化计划",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": "code",
+    "name": "代码助手",
+    "model": "deepseek-v4-flash",
+    "description": "代码审查、查 bug、执行命令、部署、计算机相关一切",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": "vision",
+    "name": "视觉助手",
+    "model": "—",
+    "description": "图片/视频内容理解",
+    "available": false,
+    "note": "本机无可用且支持图像输入的 provider，图片理解暂不可用"
+  },
+  {
+    "id": "file",
+    "name": "文件助手",
+    "model": "deepseek-v4-flash",
+    "description": "Word/PPT/PDF 等文件内容提取",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": "audio",
+    "name": "语音助手",
+    "model": "deepseek-v4-flash",
+    "description": "语音转文字并理解",
+    "available": true,
+    "note": "依赖本机 faster-whisper"
+  },
+  {
+    "id": "research",
+    "name": "科研助手",
+    "model": "deepseek-v4-flash",
+    "description": "科研问题、文献检索、研究思路",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": "search",
+    "name": "搜索助手",
+    "model": "deepseek-v4-flash",
+    "description": "一切与问题相关的资料检索",
+    "available": true,
+    "note": "web_search 在无头模式下实测可用"
+  }
+]

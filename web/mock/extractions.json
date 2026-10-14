@@ -1,0 +1,49 @@
+[
+  {
+    "path": "G:\\deploy\\order-service\\logs\\server.log",
+    "name": "server.log",
+    "kind": "text",
+    "ok": true,
+    "text": "2026-06-11 08:58:12.004 INFO  [main] c.o.OrderServiceApplication - Starting OrderServiceApplication v3.4.1 on SRV1 with PID 22180\n2026-06-11 08:58:12.688 INFO  [main] o.s.b.w.embedded.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8080 (http)\n2026-06-11 08:58:13.512 ERROR [main] o.s.b.w.embedded.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http) with context path ''\n2026-06-11 08:58:13.513 ERROR [main] c.o.OrderServiceApplication - APPLICATION FAILED TO START\n2026-06-11 08:58:13.514 ERROR [main] c.o.OrderServiceApplication - ***************************\n2026-06-11 08:58:13.514 ERROR [main] c.o.OrderServiceApplication - Description:\n2026-06-11 08:58:13.515 ERROR [main] c.o.OrderServiceApplication - Web server failed to start. Port 8080 was already in use.\n2026-06-11 08:58:13.515 ERROR [main] c.o.OrderServiceApplication - Action:\n2026-06-11 08:58:13.516 ERROR [main] c.o.OrderServiceApplication - Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.\n2026-06-11 08:58:13.517 ERROR [main] c.o.OrderServiceApplication - ***************************\n2026-06-11 08:58:13.640 INFO  [main] c.o.OrderServiceApplication - Shutting down, uptime 1.6s\n2026-06-11 09:04:51.220 WARN  [scheduler] c.o.gateway.UpstreamHealthChecker - upstream=order-core 健康检查失败 3 次，退避 30s\n",
+    "meta": {
+      "bytes": 18432,
+      "lines": 12,
+      "encoding": "utf-8",
+      "truncated": false,
+      "matched_keyword": "Port 8080 was already in use"
+    },
+    "error": null,
+    "method": "passthrough"
+  },
+  {
+    "path": "G:\\deploy\\order-service\\docs\\order-service-架构说明.pdf",
+    "name": "order-service-架构说明.pdf",
+    "kind": "document",
+    "ok": true,
+    "text": "【第 3 页 · 部署拓扑】\n生产环境 SRV1 上以 Windows 服务方式运行 order-service，监听 8080/actuator（健康检查 /health）。\n历史版本由 order-service-legacy 进程占用同一端口，升级脚本未做端口释放校验，是端口冲突的高发来源。\n\n【第 4 页 · 启动流程】\n1) 预检：netstat -ano | findstr :8080\n2) 启动 Tomcat\n3) 就绪探针：GET /health，期望 200\n\n【第 7 页 · 停机约定】\n优雅停机窗口 20s，超时由服务管理器强杀；重启后需连续两次 /health 返回 200 才认为恢复。",
+    "meta": {
+      "pages": 12,
+      "chars": 1734,
+      "truncated": false,
+      "tables": 2,
+      "notes": 1
+    },
+    "error": null,
+    "method": "pypdf"
+  },
+  {
+    "path": "G:\\deploy\\order-service\\logs\\crash-2026-06-11.png",
+    "name": "crash-2026-06-11.png",
+    "kind": "image",
+    "ok": false,
+    "text": "",
+    "meta": {
+      "width": 1440,
+      "height": 900,
+      "format": "PNG",
+      "bytes": 73411
+    },
+    "error": "缺少可选依赖 rapidocr-onnxruntime（本机未安装），无法本地 OCR。请执行：pip install rapidocr-onnxruntime",
+    "method": ""
+  }
+]

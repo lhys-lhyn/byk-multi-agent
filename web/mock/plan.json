@@ -1,0 +1,55 @@
+{
+  "goal": "定位 order-service 在 8080 端口启动失败的原因，安全地恢复服务，并沉淀可复用的排查结论",
+  "subtasks": [
+    {
+      "id": "st_1",
+      "title": "从 server.log 定位 8080 端口占用来源",
+      "detail": "完整读取 logs/server.log（18432 B）。找出启动失败的首个异常栈、报错时间点，以及提示「端口已被占用」的行；结合 netstat 说明占用 8080 的进程 PID 与镜像名。产出：根因判定 + 至少 3 条证据行（含行号）。",
+      "role": "code",
+      "depends_on": [],
+      "inputs": ["a1"],
+      "needs_privilege": false,
+      "acceptance": "给出根因结论，并附至少 3 条带行号的证据"
+    },
+    {
+      "id": "st_2",
+      "title": "结束占用 8080 的旧进程并重启 order-service",
+      "detail": "复用先例 p_1 的命令模板：先终止占用 8080 的 PID 10432，随后重启 order-service 服务，等待 8 秒后请求 http://127.0.0.1:8080/health，确认返回 200 且端口已释放。属于特权操作，需用户确认（密钥引用已由先例绑定）。",
+      "role": "code",
+      "depends_on": ["st_1"],
+      "inputs": [],
+      "needs_privilege": true,
+      "acceptance": "8080 端口释放，且 /health 连续两次返回 200"
+    },
+    {
+      "id": "st_3",
+      "title": "轮换 order-service 服务账号口令并重新注册 Windows 服务",
+      "detail": "重置域账号 order-svc 的口令，并用新口令重新注册 order-service 服务（sc.exe config obj/password）。命令里使用 {{secret}} 占位符，需要密钥引用；若没有可用的已绑定引用，必须由用户在提权确认弹层里补充，否则该命令无法执行。属于特权操作，需用户确认。",
+      "role": "code",
+      "depends_on": ["st_2"],
+      "inputs": [],
+      "needs_privilege": true,
+      "acceptance": "服务以新口令注册成功，且 /health 仍返回 200"
+    },
+    {
+      "id": "st_4",
+      "title": "检索该框架 8080 端口占用的已知问题与规避方案",
+      "detail": "检索 order-service 所属框架在 Windows 下 8080 端口占用的已知 issue，以及推荐的长期规避方式（端口配置化、优雅停机、启动前端口探测）。产出：≥2 条可落地建议并附来源链接。",
+      "role": "search",
+      "depends_on": ["st_3"],
+      "inputs": [],
+      "needs_privilege": false,
+      "acceptance": "≥2 条可落地建议，且每条附来源"
+    }
+  ],
+  "assumptions": [
+    "crash-2026-06-11.png 未做 OCR（本机缺 rapidocr-onnxruntime），因此截图内容未纳入本次分析",
+    "检查 8080 端口占用时可用的命令仅限 powershell / netstat / tasklist，不安装新工具",
+    "重启窗口假定在低峰期，允许 ≤ 30 秒服务中断",
+    "口令轮换所需的密钥引用若未绑定，则视为需要用户补充（requires_secret=true）"
+  ],
+  "questions": [
+    "是否允许在生产时段重启 order-service（默认按低峰期处理）？",
+    "结束旧进程后，是否需要同时把 order-service 改为开机自启并加端口占用预检？"
+  ]
+}

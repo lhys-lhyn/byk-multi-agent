@@ -1,0 +1,30 @@
+[
+  {
+    "id": "c_mock_01",
+    "kind": "privilege",
+    "title": "以管理员身份结束占用 8080 端口的旧进程 10432 并重启 order-service",
+    "reason": "匹配到历史成功先例（已成功 3 次），且该操作需要管理员权限",
+    "precedent_id": "p_1",
+    "command_preview": "powershell -NoProfile -Command \"Stop-Process -Id 10432 -Force; Restart-Service order-service; Start-Sleep -Seconds 8; (Invoke-WebRequest http://127.0.0.1:8080/health).StatusCode\"",
+    "secret_source": "密钥来自本地密钥库 PRECEDENT_ROOT_PW_SRV1（不回显明文）",
+    "risk": "medium",
+    "requires_secret": false,
+    "secret_ref": "PRECEDENT_ROOT_PW_SRV1",
+    "turn_id": "t_mock_0001",
+    "subtask_id": "st_2"
+  },
+  {
+    "id": "c_mock_02",
+    "kind": "privilege",
+    "title": "以管理员身份轮换 order-service 服务账号口令并重新注册 Windows 服务",
+    "reason": "命令里含 {{secret}} 占位符，但没有匹配到任何已绑定的密钥引用；批准也无法执行，需要你补充密钥引用",
+    "precedent_id": null,
+    "command_preview": "powershell -NoProfile -Command \"$pw = ConvertTo-SecureString {{secret}} -AsPlainText -Force; Set-ADAccountPassword -Identity order-svc -NewPassword $pw; sc.exe config order-service obj= 'DOMAIN\\\\order-svc' password= {{secret}}\"",
+    "secret_source": "⚠ 该命令包含 {{secret}} 占位符但没有绑定任何密钥引用：即使你点「批准」也无法执行。请在下方补填密钥引用（例如 PRECEDENT_SVC_ACCOUNT_PW），或先通过密钥库录入该引用后重试。",
+    "risk": "high",
+    "requires_secret": true,
+    "secret_ref": null,
+    "turn_id": "t_mock_0001",
+    "subtask_id": "st_3"
+  }
+]

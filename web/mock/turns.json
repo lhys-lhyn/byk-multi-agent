@@ -1,0 +1,16 @@
+[
+  {
+    "turn_id": "t_mock_0000",
+    "session_id": "s_mock_01",
+    "created_at": "2026-06-10T16:40:00+08:00",
+    "user_text": "把 deploy 目录下的发布脚本整理成一份带注释的说明文档",
+    "stage": "completed"
+  },
+  {
+    "turn_id": "t_mock_prev",
+    "session_id": "s_mock_02",
+    "created_at": "2026-06-09T11:05:00+08:00",
+    "user_text": "对比两份合同 PDF 的付款条款差异",
+    "stage": "failed"
+  }
+]

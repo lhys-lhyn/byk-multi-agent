@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BYK · 多智能体控制台</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">BYK</span>
+        <span class="brand-sub">多智能体控制台</span>
+      </div>
+      <div class="badges" id="topbar-badges"></div>
+      <div class="topbar-actions">
+        <button class="btn ghost" id="btn-resync" type="button" title="重新拉取当前回合快照对齐状态">重新同步</button>
+        <button class="btn ghost" id="btn-reconnect" type="button" title="重建事件流连接">重连事件流</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="col col-left">
+        <section class="panel" id="panel-roles"></section>
+        <section class="panel" id="panel-turns"></section>
+      </aside>
+
+      <section class="col col-center">
+        <div class="timeline" id="timeline"></div>
+        <div class="composer" id="composer"></div>
+      </section>
+
+      <aside class="col col-right">
+        <section class="panel" id="panel-overview"></section>
+        <section class="panel" id="panel-precedents"></section>
+      </aside>
+    </main>
+  </div>
+
+  <div id="modal-root"></div>
+  <div id="toast-root" class="toast-root" aria-live="polite"></div>
+  <div id="fatal-root"></div>
+
+  <noscript>本界面需要启用 JavaScript（原生 ES module）。</noscript>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

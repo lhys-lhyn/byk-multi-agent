@@ -1,0 +1,32 @@
+[
+  {
+    "id": "p_1",
+    "title": "结束占用端口的旧进程并重启服务",
+    "match_keywords": ["杀进程", "重启", "端口占用", "8080", "Stop-Process"],
+    "command_template": "powershell -NoProfile -Command \"Stop-Process -Id {pid} -Force; Restart-Service {service}\"",
+    "secret_ref": "PRECEDENT_ROOT_PW_SRV1",
+    "success_count": 3,
+    "last_used_at": "2026-05-28T14:02:11+08:00",
+    "created_at": "2026-03-02T10:31:00+08:00"
+  },
+  {
+    "id": "p_2",
+    "title": "重建并重启 docker compose 服务栈",
+    "match_keywords": ["docker", "compose", "重建", "容器"],
+    "command_template": "docker compose -f {compose_file} up -d --build {service}",
+    "secret_ref": "PRECEDENT_DOCKER_CTX",
+    "success_count": 7,
+    "last_used_at": "2026-06-01T19:44:37+08:00",
+    "created_at": "2026-02-11T08:15:00+08:00"
+  },
+  {
+    "id": "p_3",
+    "title": "回收站或站点应用的快速重启",
+    "match_keywords": ["iis", "站点", "应用池", "回收"],
+    "command_template": "powershell -NoProfile -Command \"Restart-WebAppPool -Name '{pool}'\"",
+    "secret_ref": "PRECEDENT_IIS_ADMIN",
+    "success_count": 1,
+    "last_used_at": "2026-04-19T11:20:05+08:00",
+    "created_at": "2026-04-19T11:20:05+08:00"
+  }
+]

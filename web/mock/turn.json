@@ -1,0 +1,36 @@
+{
+  "turn_id": "t_mock_0001",
+  "session_id": "s_mock_01",
+  "created_at": "2026-06-11T09:12:00+08:00",
+  "user_text": "order-service 最近总是在 8080 端口启动失败，帮我看下 server.log 定位原因；如果要干掉占用端口的旧进程，先问我一下。",
+  "attachments": [
+    {
+      "id": "a1",
+      "name": "server.log",
+      "kind": "text",
+      "size": 18432,
+      "path": "G:\\deploy\\order-service\\logs\\server.log"
+    },
+    {
+      "id": "a2",
+      "name": "order-service-架构说明.pdf",
+      "kind": "document",
+      "size": 284517,
+      "path": "G:\\deploy\\order-service\\docs\\order-service-架构说明.pdf"
+    },
+    {
+      "id": "a3",
+      "name": "crash-2026-06-11.png",
+      "kind": "image",
+      "size": 73411,
+      "path": "G:\\deploy\\order-service\\logs\\crash-2026-06-11.png"
+    }
+  ],
+  "stage": "intake",
+  "extractions": [],
+  "plan": null,
+  "subtasks": [],
+  "summary": null,
+  "error": null,
+  "pending_confirmation": null
+}
