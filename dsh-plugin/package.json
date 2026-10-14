@@ -1,0 +1,63 @@
+{
+  "name": "dsh-plugin-byk-agents",
+  "version": "1.6.5",
+  "private": true,
+  "description": "把 BYK 的七个专业助手暴露成 DSH 工具，任何会话、任何工作区都能调用",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./asr": "./lib/asr.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    ".gitignore",
+    "agents.config.example.json",
+    "cordis.patch.yml",
+    "docs/jev-planning-spec.md",
+    "lib/asr.js",
+    "lib/assistants.js",
+    "lib/client.js",
+    "lib/index.js",
+    "lib/jev.js",
+    "lib/local-extract.js",
+    "lib/mood.js",
+    "lib/plan.js",
+    "lib/routing.js",
+    "lib/settings-channel.js",
+    "lib/timing.js",
+    "package.json",
+    "readme.md",
+    "scripts/asr-mimo.mjs",
+    "test/assistants-integration.test.js",
+    "test/assistants.test.js",
+    "test/client-approval.test.js",
+    "test/jev.test.js",
+    "test/mood.test.js",
+    "test/plan.test.js",
+    "test/routing-local.test.js",
+    "test/run-smoke.mjs",
+    "test/settings-channel.test.js",
+    "test/settings-crud.test.js",
+    "test/smoke.test.js",
+    "test/timing.test.js"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "*",
+    "@deepseek-ai/dsh-tools": "*",
+    "@deepseek-ai/schemastery": "*"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-settings"
+      ]
+    }
+  }
+}
