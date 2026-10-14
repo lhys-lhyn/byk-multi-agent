@@ -1,0 +1,31 @@
+# BYK 本地内容提取层依赖（byk/extract）
+# 安装：C:\Projects\byk\.venv\Scripts\python.exe -m pip install -r requirements-extract.txt
+#
+# 说明：
+#  - 全部为本地推理，不调用任何 LLM，不需要 API key。
+#  - OCR 选用 rapidocr-onnxruntime：纯 CPU、onnxruntime、无 torch/paddle 依赖。
+#  - 语音转写选用 faster-whisper：CTranslate2 后端，模型权重运行时按需下载
+#    （默认 "small"，测试用 "tiny"）。
+
+# --- 文档解析 ---
+pypdf>=4.0
+python-docx>=1.1
+python-pptx>=0.6.23
+openpyxl>=3.1
+
+# --- 图片 OCR ---
+rapidocr-onnxruntime>=1.3
+
+# --- 音频/视频语音转写 ---
+faster-whisper>=1.0
+
+# --- 图片基础信息 ---
+Pillow>=10.0
+
+# 外部可执行文件（非 pip 依赖，必须自行提供）：
+#  ffmpeg  -> C:\utils\ffmpeg\bin\ffmpeg.exe（不在 PATH，代码内按绝对路径探测）
+#  ffprobe -> C:\utils\ffmpeg\bin\ffprobe.exe（读取视频时长/分辨率/是否有音轨）
+
+# --- 测试（非运行时依赖，按需单独安装）---
+#  C:\Projects\byk\.venv\Scripts\python.exe -m pip install pytest
+#  C:\Projects\byk\.venv\Scripts\python.exe -m pytest tests/test_extract.py -v

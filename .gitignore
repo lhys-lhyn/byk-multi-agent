@@ -1,0 +1,28 @@
+# 运行数据与密钥：绝不入库
+data/
+.venv/
+.spike/
+__pycache__/
+*.pyc
+
+# 本机配置
+config.json
+
+# 依赖与缓存（备份用排除）
+node_modules/
+.pytest_cache/
+.byk-work/
+*.log
+*.tmp
+dist/
+
+# 一次性中间产物：已移出仓库（备查 C:\Projects\_byk-archives）
+_recover/
+.dsh-fix/
+.research/
+headless-profile/
+.dsh/
+RESULT.md
+fibonacci.py
+plugins/
+~/
