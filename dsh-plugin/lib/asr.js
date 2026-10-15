@@ -15,6 +15,7 @@
  */
 import { readFileSync } from "node:fs";
 import { extname } from "node:path";
+import { errorChainText, networkHint } from "./jev.js";
 
 /** 小米 OpenAI 兼容端点。 */
 export const DEFAULT_ASR_BASE_URL = "https://api.xiaomimimo.com/v1";
@@ -125,6 +126,7 @@ export async function transcribeAudio(options = {}) {
       : "";
     return { ok: !!content, text: content, error: content ? "" : "转写结果为空", model, bytes: buf.length, ms };
   } catch (err) {
-    return { ok: false, text: "", error: "请求失败：" + String(err && err.message), model, bytes: buf.length, ms: Date.now() - started };
+    const chain = errorChainText(err);
+    return { ok: false, text: "", error: "请求失败：" + chain + networkHint(chain), model, bytes: buf.length, ms: Date.now() - started };
   }
 }

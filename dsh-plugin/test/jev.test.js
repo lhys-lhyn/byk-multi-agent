@@ -16,6 +16,8 @@ import {
   toBatchJson,
   errorJson,
   truncateText,
+  errorChainText,
+  networkHint,
   QUESTION_TYPES,
 } from "../lib/jev.js";
 
@@ -379,6 +381,42 @@ ok("QUESTION_TYPES = noul / choice / score");
   assert.equal(errorJson("x", "y", { status: 400 }), '{"ok":false,"error_kind":"x","error":"y","status":400}');
   assert.equal(truncateText("abcdef", 3), "abc…（已截断，共 6 字符）");
   ok("返回值恒为合法 JSON；失败分支（parse / network / 缺 answers）都被显式覆盖");
+}
+
+// ── 15. 网络失败必须透出 cause 链（宿主代理挂掉时不能只报 fetch failed）──
+{
+  const refused = Object.assign(new Error("fetch failed"), {
+    name: "TypeError",
+    cause: Object.assign(new Error("connect ECONNREFUSED 127.0.0.1:7897"), {
+      code: "ECONNREFUSED", address: "127.0.0.1", port: 7897,
+    }),
+  });
+  const chain = errorChainText(refused);
+  assert.ok(chain.includes("fetch failed"), "缺外层消息：" + chain);
+  assert.ok(chain.includes("ECONNREFUSED") && chain.includes("127.0.0.1:7897"), "缺真因：" + chain);
+  assert.ok(chain.includes("←"), "cause 没接到外层后面：" + chain);
+
+  // 一次 fetch 同时打多个地址时 undici 会包一层 AggregateError
+  const multi = Object.assign(new TypeError("fetch failed"), {
+    cause: Object.assign(new AggregateError([refused.cause], "all failed"), { code: "ECONNREFUSED" }),
+  });
+  assert.ok(errorChainText(multi).includes("127.0.0.1:7897"), "AggregateError 里的原因没取到");
+  assert.ok(errorChainText(multi).includes("all failed"), "AggregateError 自己的消息没取到");
+
+  // cause 自引用不能死循环
+  const cyc = new Error("self");
+  cyc.cause = cyc;
+  assert.equal(errorChainText(cyc), "self");
+
+  assert.ok(/没有服务在监听/.test(networkHint(chain)), "ECONNREFUSED 没给出处置提示");
+  assert.equal(networkHint("fetch failed"), "", "无特征时不该硬编提示");
+
+  // 端到端：桩 fetch 抛 undici 形状的错，call() 的 error 里必须带真因
+  const boom = await jevWith(async () => { throw refused; }).call("x", Q_NOUL, null);
+  assert.equal(boom.kind, "network");
+  assert.ok(boom.error.includes("ECONNREFUSED 127.0.0.1:7897"), "call() 没透出 cause：" + boom.error);
+  assert.ok(boom.error.includes("没有服务在监听"), "call() 没给处置提示：" + boom.error);
+  ok("网络失败透出 cause 链 + 处置提示；AggregateError 与自引用都不炸");
 }
 
 console.log("\ntest/jev.test.js：" + passed + " 组断言全部通过。");

@@ -61,6 +61,53 @@ export class JevError extends Error {
   }
 }
 
+/**
+ * 把一次网络失败的**完整原因链**摊平成一行。
+ *
+ * 为什么需要它：undici（Node 内建 fetch）把真因藏在 \`cause\` 里 —— 外层统一是
+ * \`TypeError: fetch failed\`，真正有用的 \`connect ECONNREFUSED 127.0.0.1:7897\` 在
+ * \`err.cause\`。只取 \`err.message\` 的话，宿主 .env 里的代理一挂，用户看到的就只有
+ * 「Jev 请求失败：fetch failed」，完全分不清是 DNS、TLS、超时还是代理端口没人听。
+ * 2026-10-15 就是这么被坑了一整轮：真因在 cause 里躺了一整天。
+ *
+ * 兼容：多地址并发失败时 undici 会包一层 AggregateError（\`err.errors\`）；
+ * cause 自引用用 seen 去重，不会死循环。
+ */
+export function errorChainText(err) {
+  const seen = new Set();
+  const parts = [];
+  const visit = (e) => {
+    if (!e || typeof e !== "object" || seen.has(e)) return;
+    seen.add(e);
+    const name = typeof e.name === "string" && e.name && e.name !== "Error" ? e.name + ": " : "";
+    const msg = typeof e.message === "string" ? e.message : String(e);
+    const bits = [];
+    if (typeof e.code === "string" && e.code) bits.push(e.code);
+    const addr = e.address || (e.cause && typeof e.cause === "object" ? e.cause.address : "");
+    if (addr) bits.push(String(addr) + (e.port ? ":" + e.port : ""));
+    let one = (name + msg).trim();
+    if (bits.length && !bits.every((b) => one.includes(b))) one += " [" + bits.join(" ") + "]";
+    if (one) parts.push(one);
+    if (e.cause) visit(e.cause);
+    if (Array.isArray(e.errors)) for (const sub of e.errors) visit(sub);
+  };
+  visit(err);
+  return parts.length ? parts.join(" ← ") : String((err && err.message) || err || "未知网络错误");
+}
+
+/** 常见网络失败的一句话处置提示。纯字符串匹配，不猜。 */
+export function networkHint(text) {
+  const s = String(text || "");
+  if (/ECONNREFUSED/.test(s)) {
+    return "（连接被拒绝：目标端口没有服务在监听。若这是宿主 .env 里的 HTTPS_PROXY/HTTP_PROXY，" +
+      "说明代理没在运行 —— 启动 Clash 之类，或用 C:\\Projects\\dsh\\proxy-watch 的自动跟随方案）";
+  }
+  if (/ENOTFOUND|EAI_AGAIN/.test(s)) return "（DNS 解析失败：检查网络，或代理是否拦了解析）";
+  if (/ETIMEDOUT|ECONNRESET|socket hang up/i.test(s)) return "（连接超时/被重置：代理链路中断或对端不可达）";
+  if (/CERT|TLS|SSL/i.test(s)) return "（TLS 证书问题：可能是代理在做中间人）";
+  return "";
+}
+
 /** 截断长文本，避免把整段响应体塞进工具结果。 */
 export function truncateText(text, limit) {
   const s = String(text == null ? "" : text);
@@ -419,7 +466,8 @@ export function createJevCaller(config, deps) {
         }
         return { ok: false, kind: "aborted", error: "Jev 调用被调用方取消（exec.signal 已 abort）。" };
       }
-      return { ok: false, kind: "network", error: "Jev 请求失败：" + String((err && err.message) || err) };
+      const chain = errorChainText(err);
+      return { ok: false, kind: "network", error: "Jev 请求失败：" + chain + networkHint(chain) };
     } finally {
       clearTimeout(timer);
     }
