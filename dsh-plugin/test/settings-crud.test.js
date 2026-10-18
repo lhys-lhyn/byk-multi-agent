@@ -69,7 +69,7 @@ mod.apply(ctx)
 const SECTION = registered.filter((r) => r.spec.name === 'settings.section' && r.spec.id === 'byk-agents')[0]
 const TAB = registered.filter((r) => r.spec.name === 'settings.plugins.tab')[0]
 assert.ok(SECTION, '必须注册 settings.section（独立整页）')
-assert.ok(TAB, '必须注册 settings.plugins.tab（内置插件页的 tab）')
+assert.equal(TAB, undefined, '不许再注册 settings.plugins.tab（「内置插件」页里的子 tab）')
 const Section = SECTION.comp
 const PROPS = { slotsProps: {}, diagnosticsTarget: () => undefined }
 
@@ -153,13 +153,11 @@ const ROWS = [
 let pass = 0
 const it = async (name, fn) => { await fn(); pass++; console.log('  \u2714 ' + name) }
 
-await it('两个槽位都注册，并且共用同一个组件', async () => {
+await it('只注册设置左侧导航一项，不再注册内置插件页的 tab', async () => {
   assert.equal(SECTION.spec.name, 'settings.section')
   assert.equal(SECTION.spec.label, 'BYK 助手')
-  assert.equal(TAB.spec.name, 'settings.plugins.tab')
-  assert.equal(TAB.spec.id, 'byk-agents')
-  assert.equal(TAB.spec.label, 'BYK 助手')
-  assert.equal(TAB.comp, Section, '整页与 tab 必须是同一个组件（不许抄一份）')
+  assert.equal(TAB, undefined, 'settings.plugins.tab 必须不存在：同一设置页不许在两个地方各出现一次')
+  assert.equal(registered.filter((r) => r.spec.name === 'settings.section').length, 1, 'settings.section 只注册一次')
 })
 
 await it('纯函数：id 校验 / 重复拦截 / 空名称 / 请求体形状', async () => {

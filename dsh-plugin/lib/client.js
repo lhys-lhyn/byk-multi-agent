@@ -1400,25 +1400,15 @@ window.__ModuleLoader__.load({
         // 设置页整页（settings.section）：注册进 DSH 设置面板，导航里显示「BYK 助手」。
         // 槽位由客户端 ui-settings 声明；没有设置面板的 profile 里这个 inject 永远不触发，
         // 只是这一项不安装，不影响其它三处卡片。
-        // 两个入口注册的必须是**同一个组件**：适配函数只写一份，两处都引用它。
+        // 只注册这一个入口。早先还额外注册过一个 settings.plugins.tab（「设置 → 内置插件」
+        // 页里的同名 tab，与整页共用同一个组件），结果同一个设置页在两个地方各出现一次；
+        // 用户明确要求只保留设置左侧导航里的一项，故该入口已删除，不要再加回来。
         const bykSettingsEntry = function (props) {
           return React.createElement(BykSettingsSection, { slotsProps: props, diagnosticsTarget: resolveDiagnosticsTargetForRender })
         }
         slots.inject('settings.section', function () {
           return slots.register(
             { name: 'settings.section', id: 'byk-agents', order: 40, label: 'BYK 助手' },
-            bykSettingsEntry
-          )
-        })
-
-        // 第二个入口：「设置 → 内置插件」页里的 tab（settings.plugins.tab），与整页**共用同一个组件**。
-        // 槽位名以官方包为准：@deepseek-ai/dsh-client-ui-settings-plugins 的 lib/client.js 里，
-        // PluginsSettingsSection 注册 settings.section(id='plugins') 时把 'settings.plugins.tab'
-        // 声明成自己的 children（kind 'list'、scope 'root'），再用 renderSlot('settings.plugins.tab',
-        // {}, { only: row.id }) 渲染。只有本插件一个 tab 时，内置插件页把这一项直接当整页显示。
-        slots.inject('settings.plugins.tab', function () {
-          return slots.register(
-            { name: 'settings.plugins.tab', id: 'byk-agents', order: 40, label: 'BYK 助手' },
             bykSettingsEntry
           )
         })
