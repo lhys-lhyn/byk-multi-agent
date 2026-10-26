@@ -35,6 +35,7 @@ import {
   parseExtractOutput,
 } from "./local-extract.js";
 import { initTask, finishTask, newTaskId, readTask, listTasks, pruneTasks, bgTaskDir } from "./bg.js";
+import { healFromError, healTempDir, summarizeHeal, ensureTempRoot } from "./sandbox-heal.js";
 import { transcribeAudio, findAudioPath } from "./asr.js";
 import { SETTINGS_ROUTE, createRouteHandler, buildAssistantRows } from "./settings-channel.js";
 import {
@@ -386,6 +387,14 @@ function resolveToolFilter(value, where) {
   return filter;
 }
 
+const SANDBOX_HEAL_HINT =
+  "\n[byk] 上面的 --temp is not an existing directory 是 Windows 沙箱私有临时目录被删导致的：" +
+  "调用 sandbox_heal 工具（把整段错误原文作为 error 参数）即可原地复活，不需要重启宿主。";
+
+function withSandboxHealHint(stderr) {
+  return /--temp is not an existing directory/.test(stderr) ? stderr + SANDBOX_HEAL_HINT : stderr;
+}
+
 function runProcess(cmd, args, opts, signal) {
   return new Promise((resolve) => {
     let child;
@@ -408,13 +417,13 @@ function runProcess(cmd, args, opts, signal) {
     child.on("error", (err) => {
       if (settled) return;
       settled = true;
-      resolve({ code: -1, stdout, stderr: `${stderr}\n${err.message}` });
+      resolve({ code: -1, stdout, stderr: withSandboxHealHint(`${stderr}\n${err.message}`) });
     });
     child.on("close", (code) => {
       if (settled) return;
       settled = true;
       if (signal) signal.removeEventListener?.("abort", onAbort);
-      resolve({ code: code === null ? -1 : code, stdout, stderr });
+      resolve({ code: code === null ? -1 : code, stdout, stderr: withSandboxHealHint(stderr) });
     });
   });
 }
@@ -506,6 +515,15 @@ function apply(ctx, config) {
   }
 
   const env = { ...process.env, PYTHONIOENCODING: "utf-8", PYTHONUTF8: "1" };
+
+  // Windows 沙箱私有临时目录的看守：%TEMP% 根缺失时先补上（沙箱 --temp 直接用它）。
+  try {
+    const tmp = ensureTempRoot();
+    if (tmp.skipped) ctx.logger?.warn?.("[byk-agents] 系统临时根目录无法解析：" + tmp.skipped);
+    else if (tmp.created) ctx.logger?.warn?.("[byk-agents] 系统临时根目录不存在，已创建：" + tmp.dir);
+  } catch (err) {
+    ctx.logger?.warn?.("[byk-agents] 临时根目录预检失败：" + String(err && err.message));
+  }
 
   // 子智能体工具可见性：默认 inherit-all（不设 toolFilter，继承父会话全部工具）。
   // 语义层校验放在加载期：非法值（如 {} 既无 allow 也无 deny）直接抛错，不静默降级。
@@ -1114,6 +1132,54 @@ function apply(ctx, config) {
   // ── 工具 3：byk_hire ────────────────────────────────────────────────
   // 官方 Team 的 spawn_teammate 不支持按 teammate 指定模型，所以这里只负责
   // "把角色挂到团队面板与任务板上"，实际执行由该 teammate 调用 byk_role 完成。
+  // ── 工具：sandbox_heal（Windows 沙箱临时目录自愈）────────────────────
+  // DSH 的 windows-acl 沙箱按 (sessionId, workspaceRoot) 缓存一个 %TEMP%\dsh-XXXX 私有目录；
+  // 该目录被删后每次沙箱调用都以 "--temp is not an existing directory" 127 失败，直到宿主重启。
+  // 这里按 DSH 的字节级口径把目录原地复活（路径不变 -> capability SID 不变 -> 受限令牌仍匹配）。
+  ctx.tools.register(defineTool({
+    name: "sandbox_heal",
+    description:
+      "修复 Windows 沙箱报 windows-acl-run: --temp is not an existing directory: <路径> 的情况" +
+      "（私有临时目录被删，之后每次带沙箱的调用都 127 失败，直到宿主重启）。" +
+      "做法：按 DSH 的字节级口径推导该目录的 capability SID，重建目录、补回 SID 的完全控制 ACE 与 Low 完整性标签，" +
+      "路径不变所以受限令牌依然匹配，无需重启。\n" +
+      "用法：把失败输出的原文作为 error 传进来（会自动解析路径）；或直接给 dir；两者都不给只检查系统临时根目录。",
+    parameters: {
+      error: { type: "string", description: "可选。失败输出原文（含 --temp / --workspace is not an existing directory 那一行）。" },
+      dir: { type: "string", description: "可选。要原地复活的目录绝对路径。" },
+    },
+    output: {
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          ok: { type: "boolean", required: true },
+          text: { type: "string", required: true },
+        },
+      },
+      render: (_args, value) => [{ type: "text", text: value.text }],
+    },
+    timeoutMs: 90000,
+    async execute(args) {
+      const errText = String(args.error || "").trim();
+      const dir = String(args.dir || "").trim();
+      if (errText) {
+        const r = await healFromError(errText);
+        if (!r.results.length) return { ok: false, text: summarizeHeal(r) };
+        return { ok: r.healed, text: summarizeHeal(r) + "\n原命令可以直接重发一次。" };
+      }
+      if (dir) {
+        const r = await healTempDir(dir);
+        const text = (r.ok ? "已复活 " : "失败 ") + r.dir + "（capability SID " + r.sid + "，" + r.grant + "，" + r.label + "）" +
+          (r.stderr ? "\n" + r.stderr : "");
+        return { ok: r.ok, text };
+      }
+      const root = ensureTempRoot();
+      if (root.skipped) return { ok: false, text: "系统临时根目录无法解析：" + root.skipped };
+      return { ok: true, text: "系统临时根目录 " + root.dir + " 可用" + (root.created ? "（本次已创建）" : "") + "。" };
+    },
+    presentCall: (args) => ({ card: "generic", title: "沙箱临时目录自愈", kind: "other", rawInput: args }),
+  }));
   // ── 工具：byk_plan ────────────────────────────────────────────────
   ctx.tools.register(defineTool({
     name: "byk_plan",

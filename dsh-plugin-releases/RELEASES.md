@@ -215,6 +215,15 @@ node C:\Projects\byk\dsh-plugin-releases\rollback.mjs C:\Projects\byk\dsh-plugin
 - 回退：`Copy-Item 'C:\Projects\byk\dsh-plugin-releases\v1.5.0\*' 'C:\Projects\byk\dsh-plugin\' -Recurse -Force`。
 
 
+## v1.7.2（2026-10-27）
+
+- **新增 `sandbox_heal` 工具 + `lib/sandbox-heal.js`**：修 Windows 沙箱 `windows-acl-run: --temp is not an existing directory: <路径>`（私有临时目录被删后每次带沙箱的调用都 127 失败，直到宿主重启）。
+  - 按 DSH 的字节级口径复刻 `tempWriteSid`（sha256(`"temp\0"` + 路径) → `S-1-4-<a>-<b>-1`），路径不变所以受限令牌里的 capability SID 仍匹配；重建目录后用 PowerShell `SecurityIdentifier` 授 ACE（`icacls /grant *S-1-4-…` 会报「账户名与安全标识间无任何映射完成」，必须走 Win32/Set-Acl），再用 `icacls /setintegritylevel (OI)(CI)Low` 补 Low 完整性标签。
+  - 已知差异：DSH 自己调用 `AclWriteGrant.add`，还会加一条 world SID 的 ambient-delete deny；自愈只补写 ACE + 标签，不加 deny（不影响写入，只是比原生目录略宽松）。
+  - 插件激活时顺带做一次临时根目录预检（`ensureTempRoot`）；`runProcess` 遇到该错误签名会给助手追加「用 sandbox_heal 修」的提示。
+- 测试：新增 `test/heal.test.js`（7 例，含按 DSH 实现取值的 SID 向量对齐 + opt-in 的真实 ACL 集成用例，需 `BYK_HEAL_TMP`）；`test/run-smoke.mjs` 全绿。
+- 归档 `v1.7.2/`（34 个文件 + MANIFEST 逐文件 sha256，rollback --dry-run consistent 34/34）。
+- 注意：`test/smoke.test.js` 不能直接 `node --test` 跑（依赖宿主解析 `@deepseek-ai/*`），必须走 `node test/run-smoke.mjs`。
 ## v1.6.0（2026-10-06）
 
 - 新增**情绪判读**工具 `byk_mood`：一次 Jev 请求固定三问（情绪基调 choice / 着急程度 score / 这一轮最需要什么 choice），
