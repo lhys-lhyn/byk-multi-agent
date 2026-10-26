@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-byk-agents",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "private": true,
   "description": "把 BYK 的七个专业助手暴露成 DSH 工具，任何会话、任何工作区都能调用",
   "type": "module",

@@ -1,0 +1,174 @@
+{
+  "name": "dsh-plugin-byk-agents",
+  "version": "1.7.1",
+  "archivedAt": "2026-10-26T07:55:33.360Z",
+  "source": "C:\\Projects\\byk\\dsh-plugin",
+  "fileCount": 33,
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 52,
+      "sha256": "2c88267399ac2228bc98472b1c524742418873d58a772eab7d02933abd261e1d"
+    },
+    {
+      "path": "agents.config.example.json",
+      "bytes": 2717,
+      "sha256": "e723928987aa0634ba64e655021b5214c302383ef92b3ab79c39a74c7e78d30f"
+    },
+    {
+      "path": "cordis.patch.yml",
+      "bytes": 814,
+      "sha256": "67aa6921cfc85d7d246604b08c27a1cc5ee7b9276e6946e5fd57a3e78616f956"
+    },
+    {
+      "path": "docs/jev-planning-spec.md",
+      "bytes": 19332,
+      "sha256": "13f030c2f8a9a3d6b0cc9d3a06be5cf2272e1f3214aa129ca2931fd6b913217c"
+    },
+    {
+      "path": "lib/asr.js",
+      "bytes": 5858,
+      "sha256": "d926db24a0ad419d93418d3750b47c5944e6a347d8d545a599e5acdff46b8dc9"
+    },
+    {
+      "path": "lib/assistants.js",
+      "bytes": 21427,
+      "sha256": "fe7f08d7a6d29e25b7d6a99774b25ff390966c3473d057cad3814dbf5423676a"
+    },
+    {
+      "path": "lib/bg.js",
+      "bytes": 4763,
+      "sha256": "a0580cf4e873a9483d8c9737f9f099c601686ac9e1f9bef8f0979431c3651e33"
+    },
+    {
+      "path": "lib/client.js",
+      "bytes": 80097,
+      "sha256": "dc5e14f1a49cba066a5126641217d3ac73a8ac5e658acfd08f44bf0b3ea13f84"
+    },
+    {
+      "path": "lib/index.js",
+      "bytes": 95968,
+      "sha256": "09d0c89766b46d20b90463c1f22c2a5abfa038b80a3a32e02fb1bc9e0a4e1994"
+    },
+    {
+      "path": "lib/jev.js",
+      "bytes": 20683,
+      "sha256": "01df759f96b66061829e3a7133ded85abf4d6b9b1b879fbc55e060f525d44a00"
+    },
+    {
+      "path": "lib/local-extract.js",
+      "bytes": 15134,
+      "sha256": "52884fd0fd340de17a1a8c7ebe1f3e417f59498672027cd5c60b90c9f048360b"
+    },
+    {
+      "path": "lib/mood.js",
+      "bytes": 8648,
+      "sha256": "d06cb515d4e9a8f761305ea4ad30d39a34ae8a8f0e0c0bb05b176784b1b9da48"
+    },
+    {
+      "path": "lib/plan.js",
+      "bytes": 11152,
+      "sha256": "d8f459c18e18480e91b14d93ec62c2f9409ad6aea76c2f5466b8efcde5657b7e"
+    },
+    {
+      "path": "lib/routing.js",
+      "bytes": 24467,
+      "sha256": "81dd5f9de595fab834a9b4130dddc6dd69e3927959b772e412d8146485e1e1a3"
+    },
+    {
+      "path": "lib/settings-channel.js",
+      "bytes": 11654,
+      "sha256": "bdc2cc2aef20d4701f6898972535048fe3f6e69d8b5e12cdd97e6891f074ba11"
+    },
+    {
+      "path": "lib/timing.js",
+      "bytes": 4341,
+      "sha256": "7278312ac6b200adfc36216753a14a0e60cfce8adb171d0c2ae1e658c473bd70"
+    },
+    {
+      "path": "NOTES.md",
+      "bytes": 3313,
+      "sha256": "5ef776cf9e1d4ec4498dd2cc35642060ab011e57098241854940e1164e1a207a"
+    },
+    {
+      "path": "package.json",
+      "bytes": 1577,
+      "sha256": "c8a12288a9460014a8e2e8f02ed171f7fbb3632bbdff81fc69b2a0b1d6c44a89"
+    },
+    {
+      "path": "readme.md",
+      "bytes": 29243,
+      "sha256": "a3a4b687b78f899cac9e69ae873af250ba77c9a2d634fd7e49f2b720cba91fb9"
+    },
+    {
+      "path": "scripts/asr-mimo.mjs",
+      "bytes": 1707,
+      "sha256": "6828bf159112a1d47db64093b49739cb3c72f4f94bce68c66cf34676ec4e9395"
+    },
+    {
+      "path": "test/assistants-integration.test.js",
+      "bytes": 6570,
+      "sha256": "35ac831bff6109fcea76aeee34a83b428d321f32e896ea6bf65d4a98639ae63b"
+    },
+    {
+      "path": "test/assistants.test.js",
+      "bytes": 12850,
+      "sha256": "f0beb5f0fb4c120ada70c96d080a9f54df9c22a129e0a88e1c3f12ca78e41509"
+    },
+    {
+      "path": "test/bg.test.js",
+      "bytes": 4351,
+      "sha256": "100c5dd510e02fde1a871f813717db5bda5159bebff33ab2e2700d6eb74faa57"
+    },
+    {
+      "path": "test/client-approval.test.js",
+      "bytes": 18122,
+      "sha256": "3ff66c71e935ed426cd56447a1a213ea053eebee6fefe3e8db96172d338c552d"
+    },
+    {
+      "path": "test/jev.test.js",
+      "bytes": 19949,
+      "sha256": "a4514c55b53cc7e6d9f2ac813e087b45fa45c20f4fce6d18be802c052624a22a"
+    },
+    {
+      "path": "test/mood.test.js",
+      "bytes": 14268,
+      "sha256": "4591c9152d37b252f0e7463b7cd722b535fd9a0b8c0522a707bd2570111ff8a6"
+    },
+    {
+      "path": "test/plan.test.js",
+      "bytes": 4984,
+      "sha256": "0ae5b85382ab65899a352df13c0136ffa7c9e6b9f96b88d907f7731d8889717b"
+    },
+    {
+      "path": "test/routing-local.test.js",
+      "bytes": 20613,
+      "sha256": "1bc6eed03dc399af2dfe953aad8102f9f64dddffd6e4f9bf22fc08eb9c194d76"
+    },
+    {
+      "path": "test/run-smoke.mjs",
+      "bytes": 2975,
+      "sha256": "6bc76782735bf88ce2cd8fa3b774bdc2dc94b22feb09153fd117b3cca2c1f5bc"
+    },
+    {
+      "path": "test/settings-channel.test.js",
+      "bytes": 17363,
+      "sha256": "9454c405063349df1ccff1d619d3b7d5970c834e077fc99c28a51269c6ca1d9c"
+    },
+    {
+      "path": "test/settings-crud.test.js",
+      "bytes": 16390,
+      "sha256": "b1fcf3581e809a9f7b2f43c7a0fc6e3b4e948539c4045c4e926e545e40456cbe"
+    },
+    {
+      "path": "test/smoke.test.js",
+      "bytes": 27557,
+      "sha256": "b334350063c9823670d2c00d83c09f510839008da324bd342ac69f8d6a110172"
+    },
+    {
+      "path": "test/timing.test.js",
+      "bytes": 6655,
+      "sha256": "1a9086720795f81d5a39efcc28dfdb3e9ff03290f334af56102b547d7283a94b"
+    }
+  ]
+}

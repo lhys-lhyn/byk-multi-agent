@@ -717,7 +717,13 @@ function apply(ctx, config) {
     const taskId = newTaskId(role);
     initTask(bykRoot, taskId, { role: role, task: String(rawTask || "").slice(0, 4000) });
     const ctrl = new AbortController();
-    const bgExec = new Proxy(exec, { get: (target, key) => (key === "signal" ? ctrl.signal : target[key]) });
+    // Proxy 的 get 陷阱在 exec.signal 是只读且不可配置的自有属性时，返回不同值会触发
+    // TypeError（“property ... is a read-only and non-configurable data property ...
+    // but the proxy did not return its actual value”）。改用对象副本：保留 exec 的
+    // 原型链与其余属性，仅把 signal 换成后台专用的独立 controller。
+    const bgDescs = Object.getOwnPropertyDescriptors(exec);
+    bgDescs.signal = { value: ctrl.signal, writable: true, enumerable: true, configurable: true };
+    const bgExec = Object.create(Object.getPrototypeOf(exec), bgDescs);
     Promise.resolve()
       .then(() => runRoleBody(role, rawTask, bgExec))
       .then((res) => finishTask(bykRoot, taskId, res))
