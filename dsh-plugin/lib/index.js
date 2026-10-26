@@ -34,6 +34,7 @@ import {
   findExtractPaths, formatExtractReport, localExtractFailureText, looksLikeMissingSubcommand,
   parseExtractOutput,
 } from "./local-extract.js";
+import { initTask, finishTask, newTaskId, readTask, listTasks, pruneTasks, bgTaskDir } from "./bg.js";
 import { transcribeAudio, findAudioPath } from "./asr.js";
 import { SETTINGS_ROUTE, createRouteHandler, buildAssistantRows } from "./settings-channel.js";
 import {
@@ -218,6 +219,11 @@ byk_role / byk_batch 返回「被环境阻塞」「零产出」「sandbox-unavai
 必须先停下，用一行说清：哪一步、哪个角色、报的原文错误、还剩哪些步骤；再给处置选项（换角色 / 拆分重试 / 等用户定），把选择交给用户。
 只有用户明确说「你自己做」「别叫助手」时才可接管；接管时必须在进度播报与最终交付里注明「本步由主控代做，原因 X」。
 理由：主控悄悄接管会让用户看到「说好派给 code、结果主对话在做」，也会把真实故障掩盖掉。
+【长任务：拆小步 + 后台模式（别让助手被掐死）】
+run_code 壳有 600 秒硬顶：**绝对不要把 byk_role / byk_batch 嵌在 run_code 程序里调用** —— 助手会被连坐掐掉、产出全丢。派助手一律作为顶层工具直接调用。
+单个子任务按 8 分钟内能跑完来拆；更大的活先拆步（每步一个明确验收产物），再逐步派。
+预计超过 8 分钟、或要读大量文件的活，用 byk_role 的 background:true：它立刻返回 taskId，助手在后台继续跑，你继续做别的；之后用 byk_status 取结果（不传 task_id 列出全部任务）。
+长任务一律在任务说明里要求助手把最终报告写成文件（给绝对路径），这样即使外层超时也不会白跑。
 **汇总交付时必须先给出「助手调用清单」**：一次调用一行，四列——角色 | 模型 | 状态 | 一句话结论。
 模型与状态直接抄每个工具结果开头那一行【<角色> · <provider/model> ...】；失败、超时、被拒绝的也要列出来，不许略过。`;
 
@@ -699,13 +705,45 @@ function apply(ctx, config) {
     return { ok: false, text: `未知角色 "${role}"。可用：${view.ids.join("、")}。` };
   }
 
+  /**
+   * 后台执行：立刻返回 taskId，助手在宿主进程里继续跑，结果落盘。
+   *
+   * 为什么要换 signal：工具调用返回后宿主会中止该次调用的 AbortSignal，
+   * 直接用 exec.signal 会让刚派出去的子智能体立刻被取消；后台任务给独立的
+   * controller，只有进程退出才结束。
+   */
+  function startRoleInBackground(role, rawTask, exec) {
+    const cleaned = pruneTasks(bykRoot, 30);
+    const taskId = newTaskId(role);
+    initTask(bykRoot, taskId, { role: role, task: String(rawTask || "").slice(0, 4000) });
+    const ctrl = new AbortController();
+    const bgExec = new Proxy(exec, { get: (target, key) => (key === "signal" ? ctrl.signal : target[key]) });
+    Promise.resolve()
+      .then(() => runRoleBody(role, rawTask, bgExec))
+      .then((res) => finishTask(bykRoot, taskId, res))
+      .catch((err) => finishTask(bykRoot, taskId, {
+        ok: false, role: role, model: "", duration_s: 0,
+        text: "后台执行异常：" + String((err && err.stack) || err),
+      }));
+    const dir = bgTaskDir(bykRoot, taskId);
+    return {
+      ok: true, role: role, model: "（后台任务）", duration_s: 0, background: true, taskId: taskId,
+      text: "已转入后台：taskId=" + taskId + "，角色 " + role + "\n" +
+        "结果目录：" + dir + "\n" +
+        "助手跑完写 result.json；用 byk_status 取结果（不传 task_id 列出全部任务）。" + "\n" +
+        "后台任务只在宿主进程存活期间有效：DSH 重启即中断，但已写出的文件还在。" +
+        (cleaned.length ? "\n" + "（已清理旧任务：" + cleaned.join("、") + "）" : ""),
+    };
+  }
+
   /** byk_role 的入口：先过角色校验，再把真正的活交给 runRoleBody。 */
-  async function runRole(roleArg, rawTask, exec) {
+  async function runRole(roleArg, rawTask, exec, opts) {
     const role = String(roleArg || "");
     const known = checkRole(role);
     if (!known.ok) {
       return { ok: false, role, model: "", duration_s: 0, text: known.text };
     }
+    if (opts && opts.background) return startRoleInBackground(role, rawTask, exec);
     return runRoleBody(role, rawTask, exec);
   }
 
@@ -957,13 +995,21 @@ function apply(ctx, config) {
       "什么时候别用：只是问一句话、或你自己就能立刻回答时 —— 每次调用都会真实拉起一个助手并计费。\n" +
       "助手没有跟你交互的通道，所以任务描述要自包含：写清背景、要做什么、怎样算完成；需要它读文件就给绝对路径。\n" +
       "长任务可以并发调用多个角色。" +
-      "助手返回「被环境阻塞」「零产出」或超时时，**不要自己接着把这份活干完**：先停下报告（哪一步、哪个角色、原文错误、还剩什么），再给处置选项由用户定；只有用户说「你自己做」才可接管。",
+      "助手返回「被环境阻塞」「零产出」或超时时，**不要自己接着把这份活干完**：先停下报告（哪一步、哪个角色、原文错误、还剩什么），再给处置选项由用户定；只有用户说「你自己做」才可接管。\n" +
+      "**注意：不要把 byk_role 嵌在 run_code 程序里调用** —— run_code 壳有 600 秒硬顶，会把助手连坐掐掉且产出全丢；派助手一律作为顶层工具直接调用。\n" +
+      "单个子任务按 8 分钟内能跑完来拆；预计更久或要读大量文件的活，传 background:true 拿 taskId，\n" +
+      "然后继续干别的，之后用 byk_status 取结果（不传 task_id 列出全部任务）。",
     parameters: {
       role: roleParam("派给哪个助手。"),
       task: {
         type: "string",
         required: true,
         description: "完整任务说明：背景、目标、已知材料（含绝对路径）、验收标准。",
+      },
+      background: {
+        type: "boolean",
+        description: "可选。true = 派完立刻返回 taskId，助手在后台继续跑，之后用 byk_status 取结果。" +
+          "预计超过 8 分钟、或要读大量文件的活都该用它，避免外层工具超时把助手连坐掐掉。",
       },
     },
     output: {
@@ -976,13 +1022,17 @@ function apply(ctx, config) {
           model: { type: "string", required: true },
           duration_s: { type: "number", required: true },
           text: { type: "string", required: true },
+          background: { type: "boolean" },
+          taskId: { type: "string" },
         },
       },
       render: (_args, value) => [{ type: "text", text: value.text }],
     },
     timeoutMs,
     async execute(args, exec) {
-      return runRole(String(args.role || ""), String(args.task || ""), exec);
+      return runRole(String(args.role || ""), String(args.task || ""), exec, {
+        background: args.background === true,
+      });
     },
     presentCall: (args) => ({
       card: "generic",
@@ -1002,7 +1052,60 @@ function apply(ctx, config) {
     },
   }));
 
-  // ── 工具 2：byk_hire ────────────────────────────────────────────────
+  // ── 工具：byk_status ────────────────────────────────────────────────
+  // 后台任务的查询入口：byk_role 传 background:true 派出去的活，结果在磁盘上，
+  // 这里按 taskId 取回，不传就列出全部。
+  ctx.tools.register(defineTool({
+    name: "byk_status",
+    description:
+      "查看 byk_role 的后台任务。不带 task_id：列出全部任务（id / 角色 / 模型 / 状态 / 耗时）；" +
+      "带 task_id：返回该任务的结果文本（超长会截断并给出完整文件路径）。" +
+      "后台任务只在宿主进程存活期间继续跑（DSH 重启即中断），但已经写出的结果文件一直在盘上。",
+    parameters: {
+      task_id: { type: "string", description: "可选。任务 id；省略则列出全部任务。" },
+      limit: { type: "number", description: "可选。返回结果的最大字符数，默认 20000。" },
+    },
+    output: {
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          ok: { type: "boolean", required: true },
+          text: { type: "string", required: true },
+        },
+      },
+      render: (_args, value) => [{ type: "text", text: value.text }],
+    },
+    timeoutMs: 30000,
+    async execute(args) {
+      const id = String(args.task_id || "").trim();
+      if (!id) {
+        const tasks = listTasks(bykRoot);
+        if (!tasks.length) {
+          return { ok: true, text: "没有后台任务。用 byk_role 传 background:true 可以派一个。" };
+        }
+        const lines = tasks.map((t) => {
+          const dur = t.duration_s === null ? "-" : t.duration_s.toFixed(1) + "s";
+          return "- " + t.taskId + "  " + (t.role || "-") + "  " + (t.model || "-") + "  " + t.status + "  " + dur;
+        });
+        return { ok: true, text: "后台任务 " + tasks.length + " 个（旧→新）：\n" + lines.join("\n") };
+      }
+      const got = readTask(bykRoot, id, Number(args.limit) || 20000);
+      if (!got.found) {
+        return { ok: false, text: "找不到任务 " + id + "。不带参数调用 byk_status 可列出全部任务。" };
+      }
+      const meta = got.meta || {};
+      const res = got.result;
+      const state = res ? (res.ok ? "完成" : "失败") : "运行中";
+      const model = (res && res.model) || meta.model || "";
+      const dur = res && typeof res.duration_s === "number" ? " · " + res.duration_s.toFixed(1) + "s" : "";
+      const head = "【后台任务 " + id + "】" + (meta.role || "") + " · " + model + " · " + state + dur;
+      const body = res ? got.text : "（仍在运行，结果写好后重试本工具）";
+      return { ok: true, text: head + "\n\n" + body };
+    },
+    presentCall: (args) => ({ card: "generic", title: "后台任务状态", kind: "other", rawInput: args }),
+  }));
+  // ── 工具 3：byk_hire ────────────────────────────────────────────────
   // 官方 Team 的 spawn_teammate 不支持按 teammate 指定模型，所以这里只负责
   // "把角色挂到团队面板与任务板上"，实际执行由该 teammate 调用 byk_role 完成。
   // ── 工具：byk_plan ────────────────────────────────────────────────

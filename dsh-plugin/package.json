@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-byk-agents",
-  "version": "1.6.5",
+  "version": "1.7.0",
   "private": true,
   "description": "把 BYK 的七个专业助手暴露成 DSH 工具，任何会话、任何工作区都能调用",
   "type": "module",
@@ -18,6 +18,7 @@
     "docs/jev-planning-spec.md",
     "lib/asr.js",
     "lib/assistants.js",
+    "lib/bg.js",
     "lib/client.js",
     "lib/index.js",
     "lib/jev.js",
@@ -32,6 +33,7 @@
     "scripts/asr-mimo.mjs",
     "test/assistants-integration.test.js",
     "test/assistants.test.js",
+    "test/bg.test.js",
     "test/client-approval.test.js",
     "test/jev.test.js",
     "test/mood.test.js",
